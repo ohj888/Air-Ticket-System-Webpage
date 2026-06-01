@@ -10,7 +10,7 @@ The website runs using Flask. The Flask app connects the HTML pages, routing log
 * Back-end database connection using MySQL
 * Flask-based web server
 * Login and session checks
-* Basic secure password management using hashed passwords
+* Basic secure password management using werkzeug security
 * Separate route files for different website functions
 * HTML templates for the user interface
 * SQL insert files for setting up database records
