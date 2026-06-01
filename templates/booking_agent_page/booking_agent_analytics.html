@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Agent Analytics</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .navbar {
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .navbar a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 18px;
+        }
+
+        .container {
+            width: 1000px;
+            margin: 50px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            margin-bottom: 28px;
+        }
+
+        h1, h2 {
+            margin-top: 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #f3f4f6;
+            padding: 22px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin-top: 0;
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        .stat-card p {
+            font-size: 30px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 0;
+        }
+
+        .bar-row {
+            margin-bottom: 18px;
+        }
+
+        .bar-label {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .bar-track {
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            background: #2563eb;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            min-width: 40px;
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+
+        .message {
+            color: #6b7280;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <strong>Booking Agent Portal</strong>
+        <div>
+            <a href="{{ url_for('booking_agent.booking_agent_home') }}">Agent Home</a>
+            <a href="{{ url_for('booking_agent.booking_agent_flights') }}">Purchased Flights</a>
+            <a href="{{ url_for('booking_agent.booking_agent_search') }}">Search Tickets</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="box">
+            <h1>Booking Agent Analytics</h1>
+            <h2>Last 30 Days</h2>
+
+            <div class="summary-grid">
+                <div class="stat-card">
+                    <h3>Total Commission</h3>
+                    <p>${{ summary.total_commission }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Average Commission</h3>
+                    <p>${{ summary.avg_commission }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Tickets Sold</h3>
+                    <p>{{ summary.tickets_sold }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <h2>Top 5 Customers by Number of Tickets</h2>
+            <p>Last 6 months</p>
+
+            {% if top_customers_tickets %}
+                {% for row in top_customers_tickets %}
+                    <div class="bar-row">
+                        <div class="bar-label">
+                            {{ row.customer_email }}: {{ row.ticket_count }} tickets
+                        </div>
+
+                        <div class="bar-track">
+                            <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">
+                                {{ row.ticket_count }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="message">No customer ticket data found.</p>
+            {% endif %}
+        </div>
+
+        <div class="box">
+            <h2>Top 5 Customers by Commission</h2>
+            <p>Last year</p>
+
+            {% if top_customers_commission %}
+                {% for row in top_customers_commission %}
+                    <div class="bar-row">
+                        <div class="bar-label">
+                            {{ row.customer_email }}: ${{ row.commission }}
+                        </div>
+
+                        <div class="bar-track">
+                            <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">
+                                ${{ row.commission }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="message">No commission data found.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</body>
+</html>

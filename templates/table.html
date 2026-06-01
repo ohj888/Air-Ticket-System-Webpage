@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Airport</title>
+</head>
+<body>
+    <h1>Search Airports by City</h1>
+
+    <p><a href="{{ url_for('index') }}">Back to home</a></p>
+
+    <form method="POST" action="{{ url_for('search_airport') }}">
+        <label for="city">Enter city:</label>
+        <input type="text" name="city" id="city" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <p>City entered: {{ city }}</p>
+    <p>Rows object: {{ rows }}</p>
+
+    {% if rows %}
+        <h2>Results</h2>
+        <table border="1">
+            <tr>
+                {% for col in columns %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            </tr>
+
+            {% for row in rows %}
+                <tr>
+                    {% for col in columns %}
+                        <td>{{ row[col] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No matching airports found.</p>
+    {% endif %}
+</body>
+</html>

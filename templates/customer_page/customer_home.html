@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Home | Airline Ticket System</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .navbar {
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .navbar a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 18px;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 900px;
+            margin: 60px auto;
+        }
+
+        .welcome-box {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 26px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-card h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.5;
+            min-height: 95px;
+        }
+
+        .feature-card a {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .feature-card a:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div>
+            <strong>Airline Ticket System</strong>
+        </div>
+
+        <div>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('search_airport') }}">Public Flight Search</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="welcome-box">
+            <h1>Customer Home</h1>
+            <p class="subtitle">Welcome, {{ username }}.</p>
+        </div>
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+                <h2>Purchased Flights</h2>
+                <p>
+                    Review your purchased flights. The default view shows upcoming flights.
+                    You can filter by date range, origin, and destination.
+                </p>
+                <a href="{{ url_for('customer.customer_flights') }}">View Flights</a>
+            </div>
+
+            <div class="feature-card">
+                <h2>Search & Buy Tickets</h2>
+                <p>
+                    Search for available flights and purchase tickets.
+                    Capacity and pricing rules should be checked on the server.
+                </p>
+                <a href="{{ url_for('customer.customer_search') }}">Search Flights</a>
+            </div>
+
+            <div class="feature-card">
+                <h2>Spending</h2>
+                <p>
+                    Review total spending in the last 12 months, spending by month,
+                    and custom date range spending.
+                </p>
+                <a href="{{ url_for('customer.customer_spending') }}">View Spending</a>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

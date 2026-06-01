@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Agent Search Tickets</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #1f2937; }
+        .navbar { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .navbar a { color: #2563eb; text-decoration: none; font-weight: bold; margin-left: 18px; }
+        .container { width: 1200px; margin: 50px auto; background: white; padding: 32px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .filter-form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+        label { font-weight: bold; display: block; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 9px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; }
+        button { background: #2563eb; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .buy-button { background: #16a34a; margin-top: 8px; }
+        .message { background: #dcfce7; color: #166534; border: 1px solid #86efac; padding: 14px; border-radius: 8px; font-weight: bold; margin-bottom: 20px; }
+        .clear-link { display: inline-block; background: #6b7280; color: white; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; margin-bottom: 24px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 9px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        th { background: #f3f4f6; }
+        .buy-form { margin: 0; }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <strong>Booking Agent Portal</strong>
+        <div>
+            <a href="{{ url_for('booking_agent.booking_agent_home') }}">Agent Home</a>
+            <a href="{{ url_for('booking_agent.booking_agent_flights') }}">Purchased Flights</a>
+            <a href="{{ url_for('booking_agent.booking_agent_analytics') }}">Analytics</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Search & Buy Tickets</h1>
+        <p>Authorized airline: <strong>{{ agent_airline }}</strong></p>
+
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% endif %}
+
+        <form method="POST" class="filter-form">
+            <input type="hidden" name="action" value="filter">
+
+            <div>
+                <label>Origin</label>
+                <select name="origin">
+                    <option value="">Any origin</option>
+                    {% for airport in airports %}
+                        <option value="{{ airport.airport_name }}" {% if origin == airport.airport_name %}selected{% endif %}>
+                            {{ airport.airport_name }} - {{ airport.city }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Destination</label>
+                <select name="destination">
+                    <option value="">Any destination</option>
+                    {% for airport in airports %}
+                        <option value="{{ airport.airport_name }}" {% if destination == airport.airport_name %}selected{% endif %}>
+                            {{ airport.airport_name }} - {{ airport.city }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Date</label>
+                <input type="date" name="date" value="{{ date }}">
+            </div>
+
+            <button type="submit">Apply Filters</button>
+        </form>
+
+        <a class="clear-link" href="{{ url_for('booking_agent.booking_agent_search') }}">Clear Filters</a>
+
+        {% if rows %}
+            <table>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Marketing Airline</th>
+                    <th>Marketing Flight</th>
+                    <th>Operating Airline</th>
+                    <th>Operating Flight</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Price</th>
+                    <th>Commission</th>
+                    <th>Status</th>
+                    <th>Buy for Customer</th>
+                </tr>
+
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row.ticket_id }}</td>
+                        <td>{{ row.marketing_airline_name }}</td>
+                        <td>{{ row.marketing_flight_num }}</td>
+                        <td>{{ row.operating_airline_name }}</td>
+                        <td>{{ row.operating_flight_num }}</td>
+                        <td>{{ row.departure_port }}</td>
+                        <td>{{ row.arrival_port }}</td>
+                        <td>{{ row.departure_time }}</td>
+                        <td>{{ row.arrival_time }}</td>
+                        <td>${{ row.price }}</td>
+                        <td>${{ row.commission }}</td>
+                        <td>{{ row.status }}</td>
+                        <td>
+                            <form method="POST" class="buy-form">
+                                <input type="hidden" name="action" value="buy">
+                                <input type="hidden" name="ticket_id" value="{{ row.ticket_id }}">
+                                <input type="email" name="customer_email" placeholder="customer@email.com" required>
+                                <button type="submit" class="buy-button">Buy</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No available tickets found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

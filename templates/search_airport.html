@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Search</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 24px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        select, input, button {
+            padding: 6px;
+            margin-top: 4px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 4px 6px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #eee;
+        }
+
+        .message {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Public Flight Search</h1>
+
+    <p><a href="{{ url_for('index') }}">Back to home</a></p>
+    <p><a href="{{ url_for('login') }}">Login</a></p>
+    <hr>
+
+    <h2>Search Upcoming Flights</h2>
+
+    <form method="POST" action="{{ url_for('search_airport') }}">
+        <input type="hidden" name="search_type" value="upcoming">
+
+        <label for="origin">Origin airport:</label><br>
+        <select name="origin" id="origin" required>
+            <option value="">Select origin</option>
+            {% for airport in airports %}
+                <option value="{{ airport.airport_name }}">
+                    {{ airport.city }} - {{ airport.airport_name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="destination">Destination airport:</label><br>
+        <select name="destination" id="destination" required>
+            <option value="">Select destination</option>
+            {% for airport in airports %}
+                <option value="{{ airport.airport_name }}">
+                    {{ airport.city }} - {{ airport.airport_name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="date">Date:</label><br>
+        <input type="date" name="date" id="date">
+
+        <br><br>
+
+        <button type="submit">Search Upcoming Flights</button>
+    </form>
+
+    <hr>
+
+    <h2>Look Up Flight Status</h2>
+
+    <form method="POST" action="{{ url_for('search_airport') }}">
+        <input type="hidden" name="search_type" value="status">
+
+        <label for="marketing_airline_name">Marketing Airline:</label><br>
+        <select name="marketing_airline_name" id="marketing_airline_name" required>
+            <option value="">Select airline</option>
+            {% for airline in marketing_airlines %}
+                <option value="{{ airline.marketing_airline_name }}">
+                    {{ airline.marketing_airline_name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="marketing_flight_num">Marketing Flight Number:</label><br>
+        <select name="marketing_flight_num" id="marketing_flight_num" required>
+            <option value="">Select airline first</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Check Flight Status</button>
+    </form>
+
+    <hr>
+
+    {% if message %}
+        <p class="message">{{ message }}</p>
+    {% endif %}
+
+    {% if rows %}
+        <h2>Results</h2>
+
+        <div class="table-container">
+            <table>
+                <tr>
+                    {% for col in columns %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+
+                {% for row in rows %}
+                    <tr>
+                        {% for col in columns %}
+                            <td>{{ row[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='search_airport.js') }}"></script>
+</body>
+</html>

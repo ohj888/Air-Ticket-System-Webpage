@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Passenger List</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #1f2937; }
+        .navbar { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .navbar a { color: #2563eb; text-decoration: none; font-weight: bold; margin-left: 18px; }
+        .container { width: 1100px; margin: 50px auto; background: white; padding: 32px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        label { font-weight: bold; display: block; margin-bottom: 6px; }
+        select, button { padding: 10px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 15px; }
+        button { background: #2563eb; color: white; font-weight: bold; border: none; cursor: pointer; margin-left: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 14px; }
+        th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        th { background: #f3f4f6; }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <strong>Airline Staff Portal</strong>
+        <div>
+            <a href="{{ url_for('airline_staff.airline_staff_home') }}">Home</a>
+            <a href="{{ url_for('airline_staff.airline_staff_customer_history') }}">Customer History</a>
+            <a href="{{ url_for('airline_staff.airline_staff_analytics') }}">Analytics</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Passenger List</h1>
+        <p>Airline: <strong>{{ airline_name }}</strong></p>
+
+        <form method="POST">
+            <label>Select Flight</label>
+            <select name="flight_number" required>
+                <option value="">Select flight</option>
+                {% for flight in flights %}
+                    <option value="{{ flight.flight_number }}" {% if selected_flight == flight.flight_number %}selected{% endif %}>
+                        {{ flight.flight_number }} | {{ flight.departure_port }} → {{ flight.arrival_port }} | {{ flight.departure_time }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit">View Passengers</button>
+        </form>
+
+        {% if passengers %}
+            <table>
+                <tr>
+                    <th>Customer Email</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Ticket</th>
+                    <th>Marketing Airline</th>
+                    <th>Marketing Flight</th>
+                    <th>Purchase Date</th>
+                </tr>
+
+                {% for row in passengers %}
+                    <tr>
+                        <td>{{ row.customer_email }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.phone_number }}</td>
+                        <td>{{ row.ticket_id }}</td>
+                        <td>{{ row.marketing_airline_name }}</td>
+                        <td>{{ row.marketing_flight_num }}</td>
+                        <td>{{ row.purchase_date }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% elif selected_flight %}
+            <p>No passengers found for this flight.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

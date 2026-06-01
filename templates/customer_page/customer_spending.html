@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Spending</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .navbar {
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .navbar a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 18px;
+        }
+
+        .container {
+            width: 1000px;
+            margin: 50px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            margin-bottom: 28px;
+        }
+
+        h1, h2 {
+            margin-top: 0;
+        }
+
+        .total-box {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .total-label {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .total {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 0;
+        }
+
+        .vertical-chart {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            gap: 28px;
+            border-left: 2px solid #d1d5db;
+            border-bottom: 2px solid #d1d5db;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .bar-wrap {
+            width: 100px;
+            text-align: center;
+        }
+
+        .bar {
+            background: #2563eb;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            min-height: 28px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        .bar-label {
+            margin-top: 8px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            align-self: end;
+            background: #2563eb;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .clear-link {
+            display: inline-block;
+            background: #6b7280;
+            color: white;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .message {
+            color: #6b7280;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <strong>Customer Portal</strong>
+        <div>
+            <a href="{{ url_for('customer.customer_home') }}">Customer Home</a>
+            <a href="{{ url_for('customer.customer_flights') }}">My Flights</a>
+            <a href="{{ url_for('customer.customer_search') }}">Available Flights</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="box">
+            <h1>My Spending</h1>
+
+            <div class="total-box">
+                {% if view_title == "Default Spending View" %}
+                    <div class="total-label">Total Spending in the Last 12 Months</div>
+                {% else %}
+                    <div class="total-label">Total Spending for Selected Date Range</div>
+                {% endif %}
+
+                <p class="total">${{ total_spending }}</p>
+            </div>
+
+            {% if view_title == "Default Spending View" %}
+                <h2>Spending from the Last 6 Months</h2>
+            {% else %}
+                <h2>Month-by-Month Spending for Selected Range</h2>
+            {% endif %}
+
+            {% if monthly_spending %}
+                <div class="vertical-chart">
+                    {% for row in monthly_spending %}
+                        <div class="bar-wrap">
+                            <div class="bar" style="--bar-height: {{ row.percent }}%;">
+                                ${{ row.amount }}
+                            </div>
+                            <div class="bar-label">{{ row.month }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="message">No spending data found.</p>
+            {% endif %}
+        </div>
+
+        <div class="box">
+            <h2>Custom Date Range</h2>
+
+            <form method="POST" class="filter-form">
+                <div>
+                    <label for="start_date">Start Date</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ start_date }}" required>
+                </div>
+
+                <div>
+                    <label for="end_date">End Date</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ end_date }}" required>
+                </div>
+
+                <button type="submit">Apply Range</button>
+            </form>
+
+            <a class="clear-link" href="{{ url_for('customer.customer_spending') }}">Default View</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

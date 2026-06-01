@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register | Airline Ticket System</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 520px;
+            max-width: calc(100vw - 40px);
+            margin: 24px auto;
+            background: white;
+            padding: 24px 32px;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 34px;
+            margin: 0 0 6px 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 18px;
+            margin: 0 0 20px 0;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-top: 24px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .links p {
+            margin: 6px 0;
+        }
+
+        .links a {
+            color: #2563eb;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Register</h1>
+        <p class="subtitle">Create a new account</p>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+
+            <label for="user_type">Register As</label>
+            <select name="user_type" id="user_type" required onchange="showFields()">
+                <option value="">Select account type</option>
+                <option value="customer">Customer</option>
+                <option value="booking_agent">Booking Agent</option>
+                <option value="airline_staff">Airline Staff</option>
+            </select>
+
+            <label for="username">Email / Username</label>
+            <input type="text" name="username" id="username" required>
+
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+
+
+            <!-- Customer fields -->
+            <div id="customer_fields" class="hidden">
+                <div class="section-title">Customer Information</div>
+
+                <label>Name</label>
+                <input type="text" name="name">
+
+                <label>Building Number</label>
+                <input type="text" name="building_number">
+
+                <label>Street</label>
+                <input type="text" name="street">
+
+                <label>City</label>
+                <input type="text" name="city">
+
+                <label>State / Region</label>
+                <input type="text" name="state" placeholder="NY, SH, Tokyo, etc.">
+
+                <label>Phone Number</label>
+                <input type="text" name="phone_number" placeholder="+1-212-555-0101">
+
+                <label>Passport Number</label>
+                <input type="text" name="passport_number">
+
+                <label>Passport Expiration Date</label>
+                <input type="date" name="passport_expiration_date">
+
+                <label>Passport Country</label>
+                <input type="text" name="passport_country">
+
+                <label>Date of Birth</label>
+                <input type="date" name="customer_date_of_birth">
+            </div>
+
+
+            <!-- Booking agent fields -->
+            <div id="booking_agent_fields" class="hidden">
+                <div class="section-title">Booking Agent Information</div>
+
+                <label>Airline Name</label>
+                <select name="agent_airline_name">
+                    <option value="">Select airline</option>
+                    {% for airline in airlines %}
+                        <option value="{{ airline.airline_name }}">
+                            {{ airline.airline_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <!-- Airline staff fields -->
+            <div id="airline_staff_fields" class="hidden">
+                <div class="section-title">Airline Staff Information</div>
+
+                <label>First Name</label>
+                <input type="text" name="first_name">
+
+                <label>Last Name</label>
+                <input type="text" name="last_name">
+
+                <label>Date of Birth</label>
+                <input type="date" name="staff_date_of_birth">
+
+                <label>Airline Name</label>
+                <select name="staff_airline_name">
+                    <option value="">Select airline</option>
+                    {% for airline in airlines %}
+                        <option value="{{ airline.airline_name }}">
+                            {{ airline.airline_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label>Staff Key</label>
+                <input type="text" name="staff_key" placeholder="Admin--1234  or Operator--5678">
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="links">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+            <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+        </div>
+    </div>
+
+    <script>
+        function showFields() {
+            const userType = document.getElementById("user_type").value;
+
+            document.getElementById("customer_fields").classList.add("hidden");
+            document.getElementById("booking_agent_fields").classList.add("hidden");
+            document.getElementById("airline_staff_fields").classList.add("hidden");
+
+            if (userType === "customer") {
+                document.getElementById("customer_fields").classList.remove("hidden");
+            } else if (userType === "booking_agent") {
+                document.getElementById("booking_agent_fields").classList.remove("hidden");
+            } else if (userType === "airline_staff") {
+                document.getElementById("airline_staff_fields").classList.remove("hidden");
+            }
+        }
+
+        window.onload = showFields;
+    </script>
+
+</body>
+</html>

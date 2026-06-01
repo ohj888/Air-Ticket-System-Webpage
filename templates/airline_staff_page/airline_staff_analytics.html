@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Airline Staff Analytics</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #1f2937; }
+        .navbar { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .navbar a { color: #2563eb; text-decoration: none; font-weight: bold; margin-left: 18px; }
+        .container { width: 1100px; margin: 50px auto; }
+        .box { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); margin-bottom: 28px; }
+        .bar-row { margin-bottom: 14px; }
+        .bar-label { font-weight: bold; margin-bottom: 5px; }
+        .bar-track { background: #e5e7eb; border-radius: 8px; overflow: hidden; }
+        .bar-fill { width: var(--bar-width); background: #2563eb; color: white; padding: 8px; border-radius: 8px; min-width: 35px; box-sizing: border-box; font-weight: bold; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .stat { background: #f3f4f6; padding: 18px; border-radius: 10px; text-align: center; }
+        .stat strong { font-size: 28px; color: #2563eb; }
+        .message { color: #6b7280; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <strong>Airline Staff Portal</strong>
+        <div>
+            <a href="{{ url_for('airline_staff.airline_staff_home') }}">Home</a>
+            <a href="{{ url_for('airline_staff.airline_staff_passengers') }}">Passengers</a>
+            <a href="{{ url_for('airline_staff.airline_staff_customer_history') }}">Customer History</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h1>Analytics for {{ airline_name }}</h1>
+
+            <div class="stats">
+                <div class="stat">
+                    <p>Delayed Flights</p>
+                    <strong>{{ delay_stats.delayed_count or 0 }}</strong>
+                </div>
+                <div class="stat">
+                    <p>On-Time / Other Flights</p>
+                    <strong>{{ delay_stats.on_time_count or 0 }}</strong>
+                </div>
+                <div class="stat">
+                    <p>Total Flights</p>
+                    <strong>{{ delay_stats.total_flights or 0 }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <h2>Most Frequent Customer: Last Year</h2>
+            {% if frequent_customer %}
+                <p><strong>{{ frequent_customer.customer_email }}</strong>: {{ frequent_customer.tickets_bought }} tickets</p>
+            {% else %}
+                <p class="message">No customer data found.</p>
+            {% endif %}
+        </div>
+
+        <div class="box">
+            <h2>Tickets Sold Per Month</h2>
+            {% for row in tickets_per_month %}
+                <div class="bar-row">
+                    <div class="bar-label">{{ row.month }}: {{ row.tickets_sold }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">{{ row.tickets_sold }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="message">No ticket sales data found.</p>
+            {% endfor %}
+        </div>
+
+        <div class="box">
+            <h2>Top Booking Agents This Month by Tickets</h2>
+            {% for row in top_agents_month_tickets %}
+                <div class="bar-row">
+                    <div class="bar-label">{{ row.agent_email }}: {{ row.tickets_sold }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">{{ row.tickets_sold }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="message">No data found.</p>
+            {% endfor %}
+        </div>
+
+        <div class="box">
+            <h2>Top Booking Agents This Year by Tickets</h2>
+            {% for row in top_agents_year_tickets %}
+                <div class="bar-row">
+                    <div class="bar-label">{{ row.agent_email }}: {{ row.tickets_sold }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">{{ row.tickets_sold }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="message">No data found.</p>
+            {% endfor %}
+        </div>
+
+        <div class="box">
+            <h2>Top Booking Agents This Month by Commission</h2>
+            {% for row in top_agents_month_commission %}
+                <div class="bar-row">
+                    <div class="bar-label">{{ row.agent_email }}: ${{ row.commission }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">${{ row.commission }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="message">No data found.</p>
+            {% endfor %}
+        </div>
+
+        <div class="box">
+            <h2>Top Booking Agents This Year by Commission</h2>
+            {% for row in top_agents_year_commission %}
+                <div class="bar-row">
+                    <div class="bar-label">{{ row.agent_email }}: ${{ row.commission }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">${{ row.commission }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="message">No data found.</p>
+            {% endfor %}
+        </div>
+
+        <div class="box">
+            <h2>Top Destinations: Last 3 Months</h2>
+            {% for row in top_destinations_3_months %}
+                <div class="bar-row">
+                    <div class="bar-label">{{ row.arrival_port }}: {{ row.tickets_sold }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">{{ row.tickets_sold }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="message">No data found.</p>
+            {% endfor %}
+        </div>
+
+        <div class="box">
+            <h2>Top Destinations: Last Year</h2>
+            {% for row in top_destinations_year %}
+                <div class="bar-row">
+                    <div class="bar-label">{{ row.arrival_port }}: {{ row.tickets_sold }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="--bar-width: {{ row.percent }}%;">{{ row.tickets_sold }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="message">No data found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

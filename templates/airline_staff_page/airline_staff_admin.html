@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Tools</title>
+
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #1f2937; }
+        .navbar { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .navbar a { color: #2563eb; text-decoration: none; font-weight: bold; margin-left: 18px; }
+
+        .container { width: 1000px; margin: 50px auto; }
+        .box { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); margin-bottom: 28px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+        input, select, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 15px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .hint {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <strong>Airline Staff Portal</strong>
+        <div>
+            <a href="{{ url_for('airline_staff.airline_staff_home') }}">Home</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Admin Tools for {{ airline_name }}</h1>
+
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% endif %}
+
+        <!-- Add Airport -->
+        <div class="box">
+            <h2>Add Airport</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="add_airport">
+
+                <select name="airport_name" required>
+                    <option value="">Select allowed airport</option>
+                    {% for airport in allowed_airports %}
+                        <option value="{{ airport.airport_name }}">
+                            {{ airport.airport_name }} - {{ airport.airport_full_name }} | {{ airport.city }}, {{ airport.state }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Add Airport</button>
+            </form>
+        </div>
+
+        <!-- Add Aircraft -->
+        <div class="box">
+            <h2>Add Aircraft</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="add_aircraft">
+
+                <div class="form-grid">
+                    <input type="text" value="{{ airline_prefix }}-" disabled>
+
+                    <select name="aircraft_type" required>
+                        <option value="">Aircraft Type</option>
+                        {% for plane in allowed_aircraft_types %}
+                            <option value="{{ plane.code }}">
+                                {{ plane.code }} - {{ plane.seat_capacity }} seats
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <input
+                        type="text"
+                        name="aircraft_number"
+                        placeholder="Aircraft Number, e.g. 001"
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        required
+                    >
+                </div>
+
+                <p class="hint">
+                    Aircraft ID will be created like:
+                    {{ airline_prefix }}-A320-001
+                </p>
+
+                <button type="submit">Add Aircraft</button>
+            </form>
+        </div>
+
+        <!-- Create Flight -->
+        <div class="box">
+            <h2>Create Flight</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="create_flight">
+
+                <div class="form-grid">
+                    <input type="text" value="{{ airline_prefix }}" disabled>
+                    <input
+                        type="text"
+                        name="flight_number_suffix"
+                        placeholder="Flight Number, e.g. 100"
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        required
+                    >
+
+                    <input type="datetime-local" name="departure_time" required>
+                    <input type="datetime-local" name="arrival_time" required>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        name="price"
+                        placeholder="Price"
+                        required
+                    >
+
+                    <select name="status" required>
+                        <option value="upcoming">upcoming</option>
+                        <option value="delayed">delayed</option>
+                        <option value="in-progress">in-progress</option>
+                        <option value="completed">completed</option>
+                    </select>
+
+                    <select name="departure_port" required>
+                        <option value="">Departure Airport</option>
+                        {% for airport in airports %}
+                            <option value="{{ airport.airport_name }}">
+                                {{ airport.airport_name }} - {{ airport.city }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="arrival_port" required>
+                        <option value="">Arrival Airport</option>
+                        {% for airport in airports %}
+                            <option value="{{ airport.airport_name }}">
+                                {{ airport.airport_name }} - {{ airport.city }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="aircraft_id" required>
+                        <option value="">Aircraft</option>
+                        {% for plane in aircraft %}
+                            <option value="{{ plane.aircraft_id }}">
+                                {{ plane.aircraft_id }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <p class="hint">
+                    Flight number will be created like:
+                    {{ airline_prefix }}100
+                </p>
+
+                <button type="submit">Create Flight</button>
+            </form>
+        </div>
+
+        <!-- Add Code-Share Flight -->
+        <div class="box">
+            <h2>Add Code-Share Flight</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="add_codeshare">
+
+                <div class="form-grid">
+
+                    <select name="partner_airline_name" required>
+                        <option value="">Partner Airline</option>
+                        {% for airline in partner_airlines %}
+                            <option value="{{ airline.airline_name }}">
+                                {{ airline.airline_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="codeshare_number" required>
+                        <option value="">Reserved Code-Share Number</option>
+                        {% for num in allowed_codeshare_numbers %}
+                            <option value="{{ num }}">{{ num }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="operating_flight_number" required>
+                        <option value="">Your Operating Flight</option>
+                        {% for flight in operating_flights %}
+                            <option value="{{ flight.flight_number }}">
+                                {{ flight.flight_number }} |
+                                {{ flight.departure_port }} → {{ flight.arrival_port }} |
+                                {{ flight.departure_time }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+                <p class="hint">
+                    Example: choosing Air China + 8501 creates CA8501 and links it to your real operating flight.
+                </p>
+
+                <button type="submit">Add Code-Share Flight</button>
+            </form>
+        </div>
+
+        <!-- Associate Booking Agent -->
+        <div class="box">
+            <h2>Associate Booking Agent</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="associate_agent">
+
+                <select name="agent_email" required>
+                    <option value="">Select booking agent</option>
+                    {% for agent in booking_agents %}
+                        <option value="{{ agent.agent_email }}">
+                            {{ agent.agent_email }}
+                            {% if agent.airline_name %}
+                                — currently: {{ agent.airline_name }}
+                            {% else %}
+                                — no airline assigned
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Associate Agent with {{ airline_name }}</button>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

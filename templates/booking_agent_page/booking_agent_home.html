@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Agent Home</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f8; color: #1f2937; }
+        .navbar { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .navbar a { color: #2563eb; text-decoration: none; font-weight: bold; margin-left: 18px; }
+        .container { width: 1000px; margin: 60px auto; }
+        .welcome-box, .card { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .welcome-box { margin-bottom: 28px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+        .card h2 { margin-top: 0; }
+        .card p { color: #6b7280; min-height: 70px; }
+        .card a { display: inline-block; background: #2563eb; color: white; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>Booking Agent Portal</strong>
+        <div>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-box">
+            <h1>Booking Agent Home</h1>
+            <p>Welcome, {{ username }}.</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Purchased Flights</h2>
+                <p>View flights purchased on behalf of customers. Filter by dates and route.</p>
+                <a href="{{ url_for('booking_agent.booking_agent_flights') }}">View Flights</a>
+            </div>
+
+            <div class="card">
+                <h2>Search & Buy</h2>
+                <p>Search tickets and purchase for customers only for your authorized airline.</p>
+                <a href="{{ url_for('booking_agent.booking_agent_search') }}">Search Tickets</a>
+            </div>
+
+            <div class="card">
+                <h2>Analytics</h2>
+                <p>View commission totals, average commission, tickets sold, and top customers.</p>
+                <a href="{{ url_for('booking_agent.booking_agent_analytics') }}">View Analytics</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
